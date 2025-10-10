@@ -3,11 +3,10 @@ from typing import Dict, List, Literal, Mapping
 
 from dependency_injector.wiring import Provide, inject
 from rdflib import RDF, RDFS
-from sm.misc.funcs import import_func
-
 from sand.config import AppConfig
 from sand.helpers.mapping_utils import KGMapping
 from sand.helpers.namespace import NamespaceService
+from sm.misc.funcs import import_func
 
 
 @dataclass

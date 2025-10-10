@@ -246,7 +246,13 @@ def export_table_data(
     # load rows
     rows: List[TableRow] = list(TableRow.select().where(TableRow.table == table))
 
-    content = export.get_default().export_data(table, rows, sm.data, OutputFormat.TTL)
+    try:
+        content = export.get_default().export_data(
+            table, rows, sm.data, OutputFormat.TTL
+        )
+    except Exception as e:
+        raise BadRequest(f"Failed to export the table. Reason: {str(e)}")
+
     resp = make_response(content)
     resp.headers["Content-Type"] = "text/ttl; charset=utf-8"
     if request.args.get("attachment", "false") == "true":
