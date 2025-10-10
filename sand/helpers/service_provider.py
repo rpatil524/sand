@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Generic, Literal, TypeVar
 
-from sand.config import FnConfig
 from sm.misc.funcs import import_func
+
+from sand.config import FnConfig
 
 T = TypeVar("T")
 

@@ -46,6 +46,7 @@ class DreprExport(IExport):
     @inject
     def __init__(
         self,
+        ignore_error_property: bool = False,
         appcfg: AppConfig = Provide["appcfg"],
         namespace: NamespaceService = Provide["namespace"],
         ontprop_ar: OntPropertyAR = Provide["properties"],
@@ -53,6 +54,8 @@ class DreprExport(IExport):
         self.appcfg = appcfg
         self.namespace = namespace
         self.ontprop_ar = ontprop_ar
+
+        self.ignore_error_property = ignore_error_property
 
     def export_data_model(self, table: Table, sm: O.SemanticModel) -> dict[str, str]:
         model = self.export_drepr_model(table, sm)
@@ -193,6 +196,13 @@ class DreprExport(IExport):
             datatype = list(datatypes)[0] if len(datatypes) == 1 else None
             if datatype is None or not has_transformation(datatype):
                 continue
+            if not self.ignore_error_property and datatype == "entity":
+                # for entity datatype, if we link to a data node and the value isn't a valid URI,
+                # it will throw an error during writing TTL data. So, if we ignore error property,
+                # we should add the transformation so that invalid URIs are converted to empty string
+                # and are handled gracefully by missing_values
+                continue
+
             datatype_transformations.append(
                 Preprocessing(
                     type=PreprocessingType.pmap,

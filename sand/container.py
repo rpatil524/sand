@@ -60,7 +60,11 @@ def use_container(config_file: Optional[Path | str] = None):
     modules = []
     export = container.export()
     for func in export.cfg.funcs.values():
-        modules.append(func.rsplit(".", 1)[0])
+        if isinstance(func, str):
+            constructor = func
+        else:
+            constructor = func["constructor"]
+        modules.append(constructor.rsplit(".", 1)[0])
 
     try:
         container.wire(

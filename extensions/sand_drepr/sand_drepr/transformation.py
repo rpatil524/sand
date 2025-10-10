@@ -9,6 +9,7 @@ datatype2transformation: Mapping[OntPropertyDataType, Path] = {
     "globe-coordinate": (transdir / "global_coordinate.py"),
     "integer-number": (transdir / "integer_number.py"),
     "decimal-number": (transdir / "decimal_number.py"),
+    "entity": (transdir / "uri.py"),
 }
 
 loaded_transformations: MutableMapping[OntPropertyDataType, str] = {}
