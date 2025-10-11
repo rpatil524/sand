@@ -126,7 +126,7 @@ export const TablePage = withStyles(styles)(
       <React.Fragment>
         <TableNavBar project={projectStore.get(table.project)} table={table} />
         <div className={classes.container}>
-          <Space direction="vertical" size={8}>
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
             <MenuBar
               graphRef={graphRef}
               tableRef={tableRef}

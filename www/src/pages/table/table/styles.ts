@@ -6,6 +6,10 @@ export const tableStyles = {
     borderRadius: 4,
     borderLeft: "1px solid #bbb !important",
   },
+  "& div.ant-table-content": {
+    width: "100%",
+    overflowX: "scroll" as "scroll",
+  },
   "& div.ant-card-body": {
     paddingLeft: 0,
     paddingRight: 0,
