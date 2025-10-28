@@ -22,5 +22,7 @@ def get_settings(appcfg: AppConfig = Provide["appcfg"]):
                 "identifiers": appcfg.semantic_model.identifiers,
                 "statements": appcfg.semantic_model.statements,
             },
+            "exports": list(appcfg.export.funcs.keys()),
+            "assistants": list(appcfg.assistant.funcs.keys()),
         }
     )

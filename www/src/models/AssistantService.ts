@@ -11,7 +11,7 @@ import { PropertyStore } from "./ontology/PropertyStore";
 import { appConfig } from "./settings";
 import { DraftSemanticModel, SemanticModelStore } from "./sm";
 
-interface AssistantRecord extends Record<number> {}
+interface AssistantRecord extends Record<number> { }
 
 interface Prediction {
   [algorithm: string]: {
@@ -56,21 +56,22 @@ export class AssistantService extends RStore<number, AssistantRecord> {
   /**
    * Predict semantic description and entity linking
    * */
-  predict: (table: Table) => CancellablePromise<void> = flow(function* (
+  predict: (table: Table, algorithm?: string) => CancellablePromise<void> = flow(function* (
     this: AssistantService,
-    table: Table
+    table: Table,
+    algorithm?: string
   ) {
     // send request to the server to get some suggestions
     const resp: AxiosResponse<Prediction> = yield axios.get(
       `${this.remoteURL}/predict/${table.id}`,
       {
-        params: { algorithm: "default" },
+        params: { algorithm: algorithm || "default" },
       }
     );
 
     // deserialzie the results and put it back to the store
-    const rawsm = resp.data.default.sm;
-    const rawrows = resp.data.default.rows;
+    const rawsm = resp.data[algorithm || "default"].sm;
+    const rawrows = resp.data[algorithm || "default"].rows;
 
     const draftId = this.smStore.getNewCreateDraftId(table);
     const graph = this.smStore.deserialize({

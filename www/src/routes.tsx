@@ -81,7 +81,11 @@ export const routes = {
   tableExportData: new PathDef({
     component: None,
     urlSchema: { tableId: "number" },
-    querySchema: { attachment: "optionalboolean", sm: "optionalstring" },
+    querySchema: {
+      attachment: "optionalboolean",
+      sm: "optionalstring",
+      format: "optionalstring",
+    },
     pathDef: "/api/table/:tableId/export",
   }),
   settings: new NoArgsPathDef({

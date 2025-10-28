@@ -96,8 +96,8 @@ class DreprExport(IExport):
         table: Table,
         rows: List[TableRow],
         sm: O.SemanticModel,
-        output_format: OutputFormat,
-    ):
+        format: OutputFormat = OutputFormat.TTL,
+    ) -> str:
         """Convert a relational table into RDF format"""
         if len(table.columns) == 0:
             # no column, no data
@@ -119,9 +119,9 @@ class DreprExport(IExport):
         content = convert(
             repr=self.export_drepr_model(table, sm),
             resources=resources,
-            format=output_format,
+            format=format,
         )
-        return self.post_processing(sm, content, output_format)
+        return self.post_processing(sm, content, format)
 
     def export_drepr_model(self, table: Table, sm: O.SemanticModel) -> DRepr:
         """Create a D-REPR model of the dataset."""

@@ -32,6 +32,8 @@ export class UISettings {
     appConfig.SEM_MODEL_STATEMENTS = new Set(
       resp.data["semantic_model"]["statements"]
     );
+    appConfig.ASSISTANT_MODELS = resp.data["assistants"];
+    appConfig.EXPORT_OPTIONS = resp.data["exports"];
 
     // add a default instanceof property to the popover view
     const instanceOf: string[] = Object.values(

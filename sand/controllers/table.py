@@ -208,6 +208,13 @@ def export_full_model(
 def export_table_data(
     id: int, export: MultiServiceProvider[IExport] = Provide["export"]
 ):
+    if "format" in request.args:
+        format = request.args["format"]
+    else:
+        format = export.cfg.default
+
+    export_func = export.get(format)
+
     # load table
     table: Table = Table.get_by_id(id)
 
@@ -247,17 +254,19 @@ def export_table_data(
     rows: List[TableRow] = list(TableRow.select().where(TableRow.table == table))
 
     try:
-        content = export.get_default().export_data(
-            table, rows, sm.data, OutputFormat.TTL
+        content = export_func.export_data(
+            table,
+            rows,
+            sm.data,
         )
     except Exception as e:
         raise BadRequest(f"Failed to export the table. Reason: {str(e)}")
 
     resp = make_response(content)
-    resp.headers["Content-Type"] = "text/ttl; charset=utf-8"
+    resp.headers["Content-Type"] = f"text/{format.lower()}; charset=utf-8"
     if request.args.get("attachment", "false") == "true":
         resp.headers["Content-Disposition"] = (
-            f"attachment; filename={get_friendly_fs_name(str(table.name))}.ttl"
+            f"attachment; filename={get_friendly_fs_name(str(table.name))}.{format.lower()}"
         )
     return resp
 

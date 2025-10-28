@@ -22,6 +22,7 @@ import {
   Table,
   useStores,
 } from "../../models";
+import { appConfig } from "../../models/settings";
 import { routes } from "../../routes";
 import { openForm } from "./forms";
 import { SemanticModelComponentFunc } from "./SemanticModelComponent";
@@ -44,6 +45,7 @@ export const MenuBar = observer(
     graphRef: React.MutableRefObject<SemanticModelComponentFunc | null>;
   }) => {
     const [menuVisible, setMenuVisible] = useState(false);
+    const [predictAlgoMenuVisible, setPredictAlgoMenuVisible] = useState(false);
     const { semanticModelStore, assistantService, uiSettings } = useStores();
 
     useHotkeys(
@@ -120,9 +122,12 @@ export const MenuBar = observer(
           .path({ tableId: table.id }, { sm: sm.name })
           .mouseClickNavigationHandler(undefined, true);
       },
-      exportData: () => {
+      exportData: (format?: string) => {
         routes.tableExportData
-          .path({ tableId: table.id }, { attachment: false, sm: sm.name })
+          .path(
+            { tableId: table.id },
+            { attachment: false, sm: sm.name, format: format }
+          )
           .mouseClickNavigationHandler(undefined, true);
       },
       openAddNodeForm: () => {
@@ -131,13 +136,54 @@ export const MenuBar = observer(
       openAddEdgeForm: () => openForm({ type: "edge", sm }),
       openTransformationFrom: () =>
         openForm({ type: "transformation", table: table }),
-      predict: () => {
-        assistantService.predict(table).then(() => {
+      predict: (algorithm?: string) => {
+        assistantService.predict(table, algorithm).then(() => {
           tableRef.current?.reload();
           uiSettings.table.enableEntityLinkingEditor();
         });
       },
     };
+
+    const exportOptions = [];
+    if (appConfig.EXPORT_OPTIONS.length === 1) {
+      exportOptions.push(
+        <Menu.Item
+          key="export-data"
+          icon={<FontAwesomeIcon icon={faDownload} />}
+          onClick={() => funcs.exportData()}
+        >
+          Export data
+        </Menu.Item>
+      );
+    } else {
+      for (const exportOption of appConfig.EXPORT_OPTIONS) {
+        exportOptions.push(
+          <Menu.Item
+            key={`export-data-${exportOption}`}
+            icon={<FontAwesomeIcon icon={faDownload} />}
+            onClick={() => funcs.exportData(exportOption)}
+          >
+            Export data ({exportOption})
+          </Menu.Item>
+        );
+      }
+    }
+
+    const predictAlgoMenu = (
+      <Menu
+        onClick={(event) => {
+          if (!event.key.startsWith("manual-close")) {
+            setPredictAlgoMenuVisible(false);
+          }
+        }}
+      >
+        {appConfig.ASSISTANT_MODELS.map((model) => (
+          <Menu.Item key={model} onClick={() => funcs.predict(model)}>
+            {model}
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
 
     const menu = (
       <Menu
@@ -246,13 +292,7 @@ export const MenuBar = observer(
           >
             Export data model
           </Menu.Item>
-          <Menu.Item
-            key="export-data"
-            icon={<FontAwesomeIcon icon={faDownload} />}
-            onClick={funcs.exportData}
-          >
-            Export data
-          </Menu.Item>
+          {exportOptions}
         </Menu.ItemGroup>
       </Menu>
     );
@@ -300,9 +340,21 @@ export const MenuBar = observer(
           <Button size="small" onClick={funcs.openAddEdgeForm}>
             Add edge
           </Button>
-          <Button size="small" onClick={funcs.predict}>
-            Predict
-          </Button>
+          {appConfig.ASSISTANT_MODELS.length > 1 ? (
+            <Dropdown
+              overlay={predictAlgoMenu}
+              onVisibleChange={setPredictAlgoMenuVisible}
+              visible={predictAlgoMenuVisible}
+            >
+              <Button size="small">
+                Predict <DownOutlined />
+              </Button>
+            </Dropdown>
+          ) : (
+            <Button size="small" onClick={() => funcs.predict()}>
+              Predict <DownOutlined />
+            </Button>
+          )}
           <Dropdown
             overlay={menu}
             onVisibleChange={setMenuVisible}

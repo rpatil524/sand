@@ -2,8 +2,8 @@ export class StartsWithIndex<V> {
   // capture the longest substring from [start, end) that leads us to target or the sub tree
   protected index: {
     [substring: string]:
-      | { value: StartsWithIndex<V>; internalNode: true }
-      | { internalNode: false; value: V };
+    | { value: StartsWithIndex<V>; internalNode: true }
+    | { internalNode: false; value: V };
   } = {};
   protected start: number = 0;
   protected end: number = 0;
@@ -93,6 +93,12 @@ export class ApplicationConfig {
 
   // list of uri of classes that are used as intermediate nodes to represent n-ary relationships, e.g., wikidata's statement
   public SEM_MODEL_STATEMENTS = new Set<string>();
+
+  // List of available export options
+  public EXPORT_OPTIONS: string[] = [];
+
+  // List of available assistant models
+  public ASSISTANT_MODELS: string[] = [];
 
   // mapping from entity's namespace into the instanceof property that they use
   protected instanceofMapping: { [namespace: string]: string } = {};

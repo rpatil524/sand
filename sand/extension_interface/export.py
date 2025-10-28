@@ -35,7 +35,6 @@ class IExport(ABC):
         table: Table,
         rows: list[TableRow],
         sm: O.SemanticModel,
-        output_format: OutputFormat,
-    ):
+    ) -> str:
         """Export relational data"""
         pass
