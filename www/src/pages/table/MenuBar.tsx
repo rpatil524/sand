@@ -50,7 +50,7 @@ export const MenuBar = observer(
 
     useHotkeys(
       "c",
-      graphRef.current === null ? () => {} : graphRef.current.recenter,
+      graphRef.current === null ? () => { } : graphRef.current.recenter,
       [graphRef.current, smUniqueIdent(semanticmodel.sms[semanticmodel.index])]
     );
 
@@ -126,7 +126,7 @@ export const MenuBar = observer(
         routes.tableExportData
           .path(
             { tableId: table.id },
-            { attachment: false, sm: sm.name, format: format }
+            format === undefined ? ({ attachment: false, sm: sm.name } as { attachment: boolean, sm: string, format: undefined }) : { attachment: false, sm: sm.name, format: format }
           )
           .mouseClickNavigationHandler(undefined, true);
       },
@@ -312,8 +312,8 @@ export const MenuBar = observer(
               {SemanticModel.isDraft(sm)
                 ? "Draft"
                 : sm.graph.stale
-                ? "Changed"
-                : "Saved"}
+                  ? "Changed"
+                  : "Saved"}
               {semanticmodel.sms.length > 1 ? ` (${sm.name})` : ""}
             </Tag>
           )}
